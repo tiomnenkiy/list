@@ -1,6 +1,6 @@
 #include <iostream>
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include "list.h"
 
 using namespace std;
@@ -22,7 +22,7 @@ public:
     ~CList() {
         ReleaseList();
     };
-    void AddItem(type);
+    void AddItem(type); //для типов int, double, char*
     void AddItem(); // нужно создавать CListRemoveIfOddValue сразу в списке, иначе он будет удаляться 2 раза: в конце main и вместе со списком
     void DisplayList();
     void ReleaseList();
@@ -46,7 +46,7 @@ void CList<type>::AddItem(type data) {
     }
 }
 
-/*
+
 template <>
 void CList<char*>::AddItem(char* data) {
     struct list *newItem;
@@ -62,7 +62,6 @@ void CList<char*>::AddItem(char* data) {
         tail = newItem;
     }
 }
- */
 
 
 template <>
@@ -99,7 +98,6 @@ void CList<CListRemoveIfOddValue>::DisplayList() {
     struct list *p;
     p = head;
     while (p!=nullptr) {
-        //cout << p->info << "->";
         p->info.DisplayList();
         cout << " | " << endl;
         p = p->next;
@@ -117,6 +115,21 @@ void CList<type>::ReleaseList() {
     }
     head=nullptr;
     tail=nullptr;
+    cout << "List cleared\n";
+}
+
+template<>
+void CList<char*>::ReleaseList() {
+    struct list *p;
+    while (head!=nullptr) {
+        p = head;
+        head = head->next;
+        delete[] p->info;
+        delete p;
+    }
+    head=nullptr;
+    tail=nullptr;
+    cout << "List cleared\n";
 }
 
 template<>
@@ -130,6 +143,7 @@ void CList<CListRemoveIfOddValue>::ReleaseList() {
     }
     head=nullptr;
     tail=nullptr;
+    cout << "List cleared\n";
 }
 
 template <typename type>
@@ -144,9 +158,84 @@ bool CList<type>::Dublicate(type data) {
         p = p->next->next;
     }
     while (p != nullptr) {
-        if (p->info == data) {
+        if (p->info == data && p == tail) {
             NewItem = new struct list;
             NewItem->info = data;
+            NewItem->next = NULL;
+            p->next = NewItem;
+            tail = NewItem;
+            p = NULL;
+        } else if (p->info == data) {
+                NewItem = new struct list;
+                NewItem->info = data;
+                NewItem->next = p->next;
+                p->next = NewItem;
+                p = p->next->next;
+        } else {
+            p = p->next;
+        }
+    }
+    return true;
+}
+
+
+template<>
+bool CList<CListRemoveIfOddValue>::Dublicate(CListRemoveIfOddValue data) {
+    struct list *p = head;
+    struct list *NewItem;
+    if (head != nullptr && head->info == data) {
+        NewItem = new struct list;
+        NewItem->info.Copy(data);
+        NewItem->next = p->next;
+        p->next = NewItem;
+        if(head == tail) {
+            tail = NewItem;
+        }
+        p = p->next->next;
+    }
+    while (p != nullptr) {
+        if (p->info == data && p == tail) {
+            NewItem = new struct list;
+            NewItem->info.Copy(data);
+            NewItem->next = NULL;
+            p->next = NewItem;
+            tail = NewItem;
+            p = NULL;
+        } else if (p->info == data) {
+            NewItem = new struct list;
+            NewItem->info.Copy(data);
+            NewItem->next = p->next;
+            p->next = NewItem;
+            p = p->next->next;
+        } else {
+            p = p->next;
+        }
+    }
+    return true;
+}
+
+template<>
+bool CList<char*>::Dublicate(char* data) {
+    struct list *p = head;
+    struct list *NewItem;
+    if (head != nullptr && strcmp(head->info, data) == 0) {
+        NewItem = new struct list;
+        strcpy(NewItem->info, data);
+        NewItem->next = p->next;
+        p->next = NewItem;
+        p = p->next->next;
+    }
+    while (p != nullptr) {
+        if (strcmp(head->info, data) == 0 && p == tail) {
+            NewItem = new struct list;
+            strcpy(NewItem->info, data);
+            NewItem->next = NULL;
+            p->next = NewItem;
+            tail = NewItem;
+            p = NULL;
+        } else if (strcmp(head->info, data) == 0 && p == tail) {
+            NewItem = new struct list;
+            strcpy(NewItem->info, data);
             NewItem->next = p->next;
             p->next = NewItem;
             p = p->next->next;
@@ -162,21 +251,114 @@ template <typename T> ostream& operator << (ostream& output, CList<T>& c) {
     return output;
 }
 
-int main() {
-    CList<CListRemoveIfOddValue> listlist;
+void ActInt() {
+    CList<int> listint;
     int key = 10;
+    while (key != 0) {
+
+        printf("\n\nCList<int>\n");
+        printf("1 - добавление элемента\n");
+        printf("2 - вывод списка на экран\n");
+        printf("3 - очитска списка\n");
+        printf("4 - дублирование\n");
+        printf("0 - выход\n");
+        printf("Ваш выбор: \n");
+
+        cin >> key;
+
+        if (key == 1) {
+            int x;
+            cout << "Введите элемент\n";
+            cin >> x;
+            listint.AddItem(x);
+        } else if (key == 2) {
+            cout << "" << listint;
+        } else if (key == 3) {
+            listint.ReleaseList();
+        } else if (key == 4) {
+            int x;
+            cout << "Введите элемент, который нужно дублировать\n";
+            cin >> x;
+            listint.Dublicate(x);
+        }
+    }
+}
+void ActDouble() {
+    CList<double> listdouble;
+    int key = 10;
+    while (key != 0) {
+
+        printf("\n\nCList<double>\n");
+        printf("1 - добавление элемента\n");
+        printf("2 - вывод списка на экран\n");
+        printf("3 - очитска списка\n");
+        printf("4 - дублирование\n");
+        printf("0 - выход\n");
+        printf("Ваш выбор: \n");
+
+        cin >> key;
+
+        if (key == 1) {
+            double x;
+            cout << "Введите элемент\n";
+            cin >> x;
+            listdouble.AddItem(x);
+        } else if (key == 2) {
+            cout << listdouble;
+        } else if (key == 3) {
+            listdouble.ReleaseList();
+        } else if (key == 4) {
+            double x;
+            cout << "Введите элемент, который нужно дублировать\n";
+            cin >> x;
+            listdouble.Dublicate(x);
+        }
+    }
+}
+void ActStr() {
+    CList<char*> liststr;
+    int key = 10;
+    while (key != 0) {
+
+        printf("\n\nCList<char*>\n");
+        printf("1 - добавление элемента\n");
+        printf("2 - вывод списка на экран\n");
+        printf("3 - очитска списка\n");
+        printf("4 - дублирование\n");
+        printf("0 - выход\n");
+        printf("Ваш выбор: \n");
+
+        cin >> key;
+
+        if (key == 1) {
+            char x[100];
+            cout << "Введите элемент\n";
+            cin >> x;
+            liststr.AddItem(x);
+        } else if (key == 2) {
+            cout << liststr;
+        } else if (key == 3) {
+            liststr.ReleaseList();
+        } else if (key == 4) {
+            char x[100];
+            cout << "Введите элемент, который нужно дублировать\n";
+            cin >> x;
+            liststr.Dublicate(x);
+        }
+    }
+}
+void ActList() {
+    int key = 10;
+    CList<CListRemoveIfOddValue> listlist;
     CListRemoveIfOddValue p; // use only for dublicate
-    //p.AddItem(1);
-    //p.AddItem(2);
+    p.AddItem(1);
+    p.AddItem(2);
     p.DisplayList();
-    //list.AddItem(p);
-    //cout << "Added with AddItem(p):\n";
-    //list.DisplayList();
-    setlocale(0,"RUS");
     while (key != 0) {
         int kekes;
 
-        printf("\n\n1 - добавление элемента\n");
+        printf("\n\nCList<CListRemoveIfOddValue>\n");
+        printf("1 - добавление элемента\n");
         printf("2 - вывод списка на экран\n");
         printf("3 - очитска списка\n");
         //printf("4 - удаление нечетных по значению из списка\n");
@@ -196,30 +378,33 @@ int main() {
             listlist.Dublicate(p);
         }
     }
-    CList<char*> strlist;
-    while (key != 0) {
-        char* kekes;
+}
 
-        printf("\n\n1 - добавление элемента\n");
-        printf("2 - вывод списка на экран\n");
-        printf("3 - очитска списка\n");
-        //printf("4 - удаление нечетных по значению из списка\n");
-        printf("4 - дублирование\n");
-        printf("ESC - выход\n");
+int main() {
+    setlocale(0,"RUS");
+    int key = 10;
+    while (key != 0) {
+        int kekes;
+
+        printf("\n\n1 - cоздать список int\n");
+        printf("2 - cоздать список double\n");
+        printf("3 - cоздать список char*\n");
+        printf("4 - cоздать список CListRemoveIfOddValue\n");
+        printf("0 - выход\n");
         printf("Ваш выбор: \n");
 
         cin >> key;
 
         if (key == 1) {
-            strlist.AddItem();
+            ActInt();
         } else if (key == 2) {
-            cout << strlist;
+            ActDouble();
         } else if (key == 3) {
-            strlist.ReleaseList();
+            ActStr();
         } else if (key == 4) {
-            
-            strlist.Dublicate(kekes);
+            ActList();
         }
     }
+
     return 0;
 }

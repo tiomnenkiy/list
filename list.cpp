@@ -1,6 +1,3 @@
-//
-// Created by merso on 06.01.2020.
-//
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
@@ -76,17 +73,13 @@ void CListRemoveIfOddValue::RemoveIfOddValue() {
     }
 }
 
-CListRemoveIfOddValue& CListRemoveIfOddValue::operator= (CListRemoveIfOddValue const& c) {
+void CListRemoveIfOddValue::Copy(const CListRemoveIfOddValue& x){
     struct CListRemoveIfOddValue::flist *p;
-    if (this->head != NULL) { // without this acts like +=
-        this->ReleaseList();
-    }
-    p = c.head;
+    p = x.head;
     while(p!=NULL) {
         this->AddItem(p->info);
         p = p->next;
     }
-    return *this;
 }
 
 bool operator== (CListRemoveIfOddValue const& c1, CListRemoveIfOddValue const& c2) {
@@ -112,10 +105,11 @@ void CListRemoveIfOddValue::InputList () {
     setlocale(0,"RUS");
     while (key != 0) {
         int kekes;
-        printf("\n\n1 - добавление элемента\n");
+        printf("\n\nCListRemoveIfOddValue\n");
+        printf("1 - добавление элемента\n");
         printf("2 - вывод списка на экран\n");
         printf("3 - очитска списка\n");
-        printf("ESC - выход\n");
+        printf("0 - выход\n");
         printf("Ваш выбор: \n");
 
         std::cin >> key;

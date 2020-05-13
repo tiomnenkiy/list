@@ -1,6 +1,3 @@
-//
-// Created by merso on 06.01.2020.
-//
 #ifndef OOP_1_LIST_H
 #define OOP_1_LIST_H
 
@@ -19,10 +16,7 @@ public:
     void DisplayList();
     void ReleaseList();
     void RemoveIfOddValue();
-    flist* GetHead() {
-        return head;
-    }
-    CListRemoveIfOddValue& operator= (CListRemoveIfOddValue const& c);
+    void Copy(const CListRemoveIfOddValue& x);
     friend bool operator== (CListRemoveIfOddValue const& c1, CListRemoveIfOddValue const& c2);
     void InputList ();
 };
